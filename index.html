@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Citas y Verificador CPU</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- BARRA SUPERIOR -->
+<header class="top-bar">
+  <div class="logo">📅 Agenda CRM & CPU Check</div>
+  
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <!-- Botón exportar copia de seguridad -->
+    <button onclick="exportarBackup()" class="btn btn-secondary" title="Descargar copia de seguridad en JSON">
+      💾 Guardar Copia
+    </button>
+
+    <!-- Botón importar copia -->
+    <button onclick="document.getElementById('inputBackupFile').click()" class="btn btn-secondary" title="Cargar citas desde archivo JSON">
+      📂 Cargar Copia
+    </button>
+    <input type="file" id="inputBackupFile" accept=".json" style="display: none;" onchange="importarBackup(event)">
+
+    <!-- Botón CPU que ya tenías -->
+    <button id="btnOpenCpuModal" class="btn btn-cpu">⚡ Comprobar CPU</button>
+  </div>
+</header>
+
+  <!-- CONTENEDOR PRINCIPAL DEL CALENDARIO -->
+  <main class="main-container">
+    <div class="calendar-card">
+      <div class="calendar-header">
+        <button id="btnPrevMonth" class="btn btn-nav" title="Mes anterior">&lt;</button>
+        <h2 id="currentMonthYear">Mes Año</h2>
+        <button id="btnNextMonth" class="btn btn-nav" title="Mes siguiente">&gt;</button>
+      </div>
+
+      <!-- Días de la semana -->
+      <div class="calendar-weekdays">
+        <div>Lun</div>
+        <div>Mar</div>
+        <div>Mié</div>
+        <div>Jue</div>
+        <div>Vie</div>
+        <div>Sáb</div>
+        <div>Dom</div>
+      </div>
+
+      <!-- Cuadrícula de días -->
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+  </main>
+
+  <!-- MODAL / PESTAÑA DE CITAS DEL DÍA -->
+  <div id="dayModal" class="modal-overlay hidden">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3 id="modalDateTitle">Citas del día</h3>
+        <button class="close-btn" onclick="cerrarModal('dayModal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-actions">
+          <button id="btnShowAddCitaForm" class="btn btn-primary">➕ Añadir Cita</button>
+        </div>
+
+        <!-- Formulario para nueva cita (inicialmente oculto) -->
+        <form id="addCitaForm" class="cita-form hidden">
+          <h4>Nueva Cita</h4>
+          <div class="form-row">
+            <input type="text" id="inputCliente" placeholder="Nombre del cliente" required>
+            <input type="time" id="inputHora" required>
+          </div>
+          <div class="form-row">
+            <input type="url" id="inputCrm" placeholder="Enlace al CRM (https://...)" required>
+          </div>
+          <div class="form-buttons">
+            <button type="submit" class="btn btn-success">Guardar Cita</button>
+            <button type="button" class="btn btn-secondary" onclick="ocultarFormCita()">Cancelar</button>
+          </div>
+        </form>
+
+        <!-- Lista de citas del día -->
+        <div class="citas-list-container">
+          <table class="citas-table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>CRM</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="citasTableBody">
+              <!-- Se llena con JS -->
+            </tbody>
+          </table>
+          <p id="noCitasMsg" class="empty-msg hidden">No hay citas agendadas para este día.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL / PESTAÑA COMPROBADOR DE CPU -->
+  <div id="cpuModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚡ Verificador de CPU (Mínimo: 2000 pts)</h3>
+        <button class="close-btn" onclick="cerrarModal('cpuModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="subtitle">Comprueba al instante si el procesador es compatible con la app:</p>
+
+        <div class="cpu-input-group">
+          <input type="text" id="inputCpuName" list="cpuList"
+            placeholder="Escribe el procesador (ej: i5-8250U, N4020, Ryzen 3...)">
+          <datalist id="cpuList"></datalist>
+          <button id="btnCheckCpu" class="btn btn-primary">Comprobar</button>
+        </div>
+
+        <!-- Resultado de la comprobación -->
+        <div id="cpuResultBox" class="result-box hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
